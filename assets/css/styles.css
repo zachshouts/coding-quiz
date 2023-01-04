@@ -1,0 +1,48 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+/* Header Styles */
+header {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 10px;
+}
+
+header p {
+    font-size: 1.2rem;
+}
+
+header p:last-of-type {
+    font-weight: bold;
+}
+
+header a {
+    text-decoration: none;
+    color: black;
+}
+
+/* Body Styles */
+body {
+    text-align: center;
+}
+
+section {
+    width: 50%;
+    margin: 50px auto;
+}
+
+section p {
+    margin: 12px auto 16px auto;
+}
+
+/* Button Styles */
+button {
+    padding: 2px 6px;
+    font-weight: bold;
+    background-color: purple;
+    color: white;
+    border-radius: 7px;
+    border-color: purple;
+}
