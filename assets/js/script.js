@@ -8,7 +8,8 @@ const startBtn = document.getElementById("startBtn");
 const questionSet = [
     {question: "The first argument in the setInterval() function, is what kind of function?", 
     answer: "callback",
-    option1: "anonymous", option2: "callback", option3: "arrow", option4: "standard"}
+    option1: "anonymous", option2: "callback", option3: "arrow", option4: "standard"},
+    {question: "Is this going to work?", answer: "hopefully", option1: "yes", option2: "no", option3: "hopefully", option4: "no idea"}
 ];
 const answers = [];
 let timer = 90;
@@ -52,7 +53,7 @@ function createAnswerList() {
 
     const liArray = document.querySelectorAll("#answers li");
     for (let i = 0; i < liArray.length; i++) {
-        liArray[i].setAttribute("style", "margin: 5px auto; color: white; padding: 2px 6px; border-radius: 6px; align-content: flex-start;");
+        liArray[i].setAttribute("style", "margin: 5px auto; color: white; padding: 2px 6px; border-radius: 6px;");
     }
 
     displayNextQuestion();
@@ -64,10 +65,10 @@ function displayNextQuestion() {
     const ansHolders = document.querySelectorAll("#quiz li");
     for (let i = 0; i < ansHolders.length; i++) {
         if (questionSet[currentIndex].answer === questionSet[currentIndex][`option${i+1}`]) {
-            ansHolders[i].innerHTML = `<span style="background-color: purple; padding: 4px 10px; border-radius: 6px;">${questionSet[currentIndex][`option${i+1}`]}</span`;
+            ansHolders[i].innerHTML = `<span style="background-color: purple; padding: 4px 10px; border-radius: 6px;" data-correct="true">${questionSet[currentIndex][`option${i+1}`]}</span`;
             ansHolders[i].setAttribute("data-correct", "true");
         } else {
-            ansHolders[i].innerHTML = `<span style="background-color: purple; padding: 4px 10px; border-radius: 6px;">${questionSet[currentIndex][`option${i+1}`]}</span`;
+            ansHolders[i].innerHTML = `<span style="background-color: purple; padding: 4px 10px; border-radius: 6px;" data-correct="false">${questionSet[currentIndex][`option${i+1}`]}</span`;
             ansHolders[i].setAttribute("data-correct", "false");
         }
 
@@ -77,7 +78,20 @@ function displayNextQuestion() {
 
 
 quiz.addEventListener("click", function(e) {
-    console.log(e.target);
+    if (e.target.dataset.correct === "true") {
+        score += 1;
+    } else {
+        timer -= 10;
+    }
+    
+    if (currentIndex === (questionSet.length - 1)) {
+        questionH1.textContent = `Your score is ${score}!`;
+        document.body.style.textAlign = "center";
+        document.querySelector("ol").remove();
+    } else {
+        currentIndex++;
+        displayNextQuestion();
+    }
 });
 
 let displayScores = () => console.log("here");
