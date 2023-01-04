@@ -1,6 +1,7 @@
 const timerPara = document.getElementById("timer");
 const highscoresLink = document.getElementById("highscores");
-const questionH1 = document.querySelector("section h1");
+const quiz = document.getElementById("quiz");
+const questionH1 = document.querySelector("#quiz h1");
 const startBtn = document.getElementById("startBtn");
 
 
@@ -14,7 +15,8 @@ let timer = 90;
 let score = 0;
 let currentIndex = 0;
 
-startBtn.addEventListener("click", function() {
+startBtn.addEventListener("click", function(e) {
+    e.stopPropagation();
     setQuiz();
     const timerInterval = setInterval(function(){
         if (timer >= 0) {
@@ -29,24 +31,54 @@ startBtn.addEventListener("click", function() {
 
 function setQuiz() {
     document.querySelector("body").style.textAlign = "left";
-    document.querySelector("section p").remove();
+    document.querySelector("#quiz p").remove();
     startBtn.remove();
     createAnswerList();
-    displayNextQuestion();
 }
 
 function createAnswerList() {
     var answerList = document.createElement("ol");
+    answerList.setAttribute("id", "answers");
+    quiz.appendChild(answerList);
     var ans1 = document.createElement("li");
+    ans1.setAttribute("id", "ans1");
     var ans2 = document.createElement("li");
+    ans2.setAttribute("id", "ans2");
     var ans3 = document.createElement("li");
     var ans4 = document.createElement("li");
+    answerList.append(ans1, ans2, ans3, ans4);
+
+    answerList.setAttribute("style", "list-style: none;");
+
+    const liArray = document.querySelectorAll("#answers li");
+    for (let i = 0; i < liArray.length; i++) {
+        liArray[i].setAttribute("style", "margin: 5px auto; color: white; padding: 2px 6px; border-radius: 6px; align-content: flex-start;");
+    }
+
+    displayNextQuestion();
 }
+
 
 function displayNextQuestion() {
     questionH1.textContent = questionSet[currentIndex].question;
+    const ansHolders = document.querySelectorAll("#quiz li");
+    for (let i = 0; i < ansHolders.length; i++) {
+        if (questionSet[currentIndex].answer === questionSet[currentIndex][`option${i+1}`]) {
+            ansHolders[i].innerHTML = `<span style="background-color: purple; padding: 4px 10px; border-radius: 6px;">${questionSet[currentIndex][`option${i+1}`]}</span`;
+            ansHolders[i].setAttribute("data-correct", "true");
+        } else {
+            ansHolders[i].innerHTML = `<span style="background-color: purple; padding: 4px 10px; border-radius: 6px;">${questionSet[currentIndex][`option${i+1}`]}</span`;
+            ansHolders[i].setAttribute("data-correct", "false");
+        }
+
+    }
 }
 
+
+
+quiz.addEventListener("click", function(e) {
+    console.log(e.target);
+});
 
 let displayScores = () => console.log("here");
 
