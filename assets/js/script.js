@@ -16,28 +16,15 @@ let timer = 90;
 let score = 0;
 let currentIndex = 0;
 
-startBtn.addEventListener("click", function(e) {
-    e.stopPropagation();
-    setQuiz();
-    const timerInterval = setInterval(function(){
-        if (timer >= 0) {
-            timerPara.textContent = `Time: ${timer}`;
-            timer--;
-        } else {
-            console.log("Done");
-            clearInterval(timerInterval);
-        }
-    }, 1000);
-});
 
-function setQuiz() {
+const setQuiz = () => {
     document.querySelector("body").style.textAlign = "left";
     document.querySelector("#quiz p").remove();
     startBtn.remove();
     createAnswerList();
 }
 
-function createAnswerList() {
+const createAnswerList = () => {
     var answerList = document.createElement("ol");
     answerList.setAttribute("id", "answers");
     quiz.appendChild(answerList);
@@ -60,7 +47,7 @@ function createAnswerList() {
 }
 
 
-function displayNextQuestion() {
+const displayNextQuestion = () => {
     questionH1.textContent = questionSet[currentIndex].question;
     const ansHolders = document.querySelectorAll("#quiz li");
     for (let i = 0; i < ansHolders.length; i++) {
@@ -75,7 +62,23 @@ function displayNextQuestion() {
     }
 }
 
+const saveScore = () => {
+    
+}
 
+startBtn.addEventListener("click", function(e) {
+    e.stopPropagation();
+    setQuiz();
+    const timerInterval = setInterval(function(){
+        if (timer >= 0) {
+            timerPara.textContent = `Time: ${timer}`;
+            timer--;
+        } else {
+            console.log("Done");
+            clearInterval(timerInterval);
+        }
+    }, 1000);
+});
 
 quiz.addEventListener("click", function(e) {
     if (e.target.dataset.correct === "true") {
@@ -93,6 +96,8 @@ quiz.addEventListener("click", function(e) {
         displayNextQuestion();
     }
 });
+
+
 
 let displayScores = () => console.log("here");
 
