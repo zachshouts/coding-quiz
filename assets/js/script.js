@@ -12,6 +12,7 @@ const questionSet = [
     {question: "Is this going to work?", answer: "hopefully", option1: "yes", option2: "no", option3: "hopefully", option4: "no idea"}
 ];
 const answers = [];
+let timerInterval;
 let timer = 90;
 let score = 0;
 let currentIndex = 0;
@@ -25,27 +26,32 @@ const setQuiz = () => {
 }
 
 const createAnswerList = () => {
-    var answerList = document.createElement("ol");
+    const answerList = document.createElement("ol");
     answerList.setAttribute("id", "answers");
     quiz.appendChild(answerList);
-    var ans1 = document.createElement("li");
-    ans1.setAttribute("id", "ans1");
-    var ans2 = document.createElement("li");
-    ans2.setAttribute("id", "ans2");
-    var ans3 = document.createElement("li");
-    var ans4 = document.createElement("li");
-    answerList.append(ans1, ans2, ans3, ans4);
 
-    answerList.setAttribute("style", "list-style: none;");
+    const ansFeedback = document.createElement("p");
+    ansFeedback.setAttribute("style", "padding-top: 14px; margin-top: 14px; border-top: 1px solid black; visibility: hidden;");
+    quiz.appendChild(ansFeedback);
+
+    const ans1 = document.createElement("li");
+    const ans2 = document.createElement("li");
+    const ans3 = document.createElement("li");
+    const ans4 = document.createElement("li");
+
+    answerList.append(ans1, ans2, ans3, ans4);
 
     const liArray = document.querySelectorAll("#answers li");
     for (let i = 0; i < liArray.length; i++) {
         liArray[i].setAttribute("style", "margin: 5px auto; color: white; padding: 2px 6px; border-radius: 6px;");
     }
 
+    answerList.setAttribute("style", "list-style: none;");
+
+
+
     displayNextQuestion();
 }
-
 
 const displayNextQuestion = () => {
     questionH1.textContent = questionSet[currentIndex].question;
@@ -58,8 +64,14 @@ const displayNextQuestion = () => {
             ansHolders[i].innerHTML = `<span style="background-color: purple; padding: 4px 10px; border-radius: 6px;" data-correct="false">${questionSet[currentIndex][`option${i+1}`]}</span`;
             ansHolders[i].setAttribute("data-correct", "false");
         }
-
     }
+}
+
+const endQuiz = () => {
+    clearInterval(timerInterval);
+    questionH1.textContent = `Your score is ${score}!`;
+    document.body.style.textAlign = "center";
+    document.querySelector("ol").remove();
 }
 
 const saveScore = () => {
@@ -69,28 +81,34 @@ const saveScore = () => {
 startBtn.addEventListener("click", function(e) {
     e.stopPropagation();
     setQuiz();
-    const timerInterval = setInterval(function(){
+    timerInterval = setInterval(function(){
         if (timer >= 0) {
-            timerPara.textContent = `Time: ${timer}`;
             timer--;
+            timerPara.textContent = `Time: ${timer}`;
         } else {
-            console.log("Done");
             clearInterval(timerInterval);
         }
     }, 1000);
 });
 
 quiz.addEventListener("click", function(e) {
+    const feedbackArea = document.querySelector("#quiz p");
+    feedbackArea.style.visibility = "visible";
     if (e.target.dataset.correct === "true") {
         score += 1;
+        feedbackArea.textContent = "Correct";
     } else {
         timer -= 10;
+        feedbackArea.textContent = "Wrong"
     }
+
+    setTimeout(() => { 
+        feedbackArea.textContent = "";
+        feedbackArea.style.visibility = "hidden";
+    }, 500);
     
     if (currentIndex === (questionSet.length - 1)) {
-        questionH1.textContent = `Your score is ${score}!`;
-        document.body.style.textAlign = "center";
-        document.querySelector("ol").remove();
+        endQuiz();
     } else {
         currentIndex++;
         displayNextQuestion();
