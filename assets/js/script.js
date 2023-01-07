@@ -11,10 +11,11 @@ const questionSet = [
     option1: "anonymous", option2: "callback", option3: "arrow", option4: "standard"},
     {question: "Is this going to work?", answer: "hopefully", option1: "yes", option2: "no", option3: "hopefully", option4: "no idea"}
 ];
-const answers = [];
+
+const scores = JSON.parse(localStorage.getItem("scores") || '[]');
 let timerInterval;
 let timer = 90;
-let score = 0;
+let currentScore = 0;
 let currentIndex = 0;
 
 
@@ -48,8 +49,6 @@ const createAnswerList = () => {
 
     answerList.setAttribute("style", "list-style: none;");
 
-
-
     displayNextQuestion();
 }
 
@@ -59,22 +58,86 @@ const displayNextQuestion = () => {
     for (let i = 0; i < ansHolders.length; i++) {
         if (questionSet[currentIndex].answer === questionSet[currentIndex][`option${i+1}`]) {
             ansHolders[i].innerHTML = `<span style="background-color: purple; padding: 4px 10px; border-radius: 6px;" data-correct="true">${questionSet[currentIndex][`option${i+1}`]}</span`;
-            ansHolders[i].setAttribute("data-correct", "true");
         } else {
             ansHolders[i].innerHTML = `<span style="background-color: purple; padding: 4px 10px; border-radius: 6px;" data-correct="false">${questionSet[currentIndex][`option${i+1}`]}</span`;
-            ansHolders[i].setAttribute("data-correct", "false");
         }
     }
 }
 
 const endQuiz = () => {
     clearInterval(timerInterval);
-    questionH1.textContent = `Your score is ${score}!`;
+    questionH1.textContent = `Your score is ${currentScore}!`;
     document.body.style.textAlign = "center";
     document.querySelector("ol").remove();
+    document.querySelector('#quiz p').remove();
+    saveScore();
 }
 
 const saveScore = () => {
+    // Add new p tag for instructions and input 
+    const instructions = document.createElement('p');
+    instructions.textContent = "Enter your intials to save your score.";
+    const initialsField = document.createElement('input');
+    initialsField.type = "text";
+    initialsField.style.display = "block";
+    initialsField.style.margin = "6px auto";
+    const submitBtn  = document.createElement("button");
+    submitBtn.type = "submit";
+    submitBtn.textContent = "Submit";
+
+    quiz.append(instructions, initialsField, submitBtn);
+
+    submitBtn.addEventListener("click", function() {
+        const currentAttempt = {
+            initials: initialsField.value,
+            score: currentScore
+        };
+        scores.push(currentAttempt);
+        localStorage.setItem("scores", JSON.stringify(scores));
+        displayScores(true, scores);
+    });
+
+}
+
+const displayScores = (endOfQuiz, scoreArr = scores) => {
+    const allScores = scoreArr;
+    questionH1.textContent = "Scores";
+    document.querySelector('#quiz p').remove();
+    if (endOfQuiz) {
+        document.querySelector("#quiz input").remove();
+    } 
+    const scoresList = document.createElement('ol');
+    
+    for (let i = 0; i < scores.length; i++) {
+        let initials = scores[i].initials;
+        let score = scores[i].score;
+        let li = document.createElement('li');
+        li.textContent = `${initials}: ${score}`;
+        scoresList.appendChild(li);
+    }
+
+    quiz.insertBefore(scoresList, quiz.children[1]);
+
+    document.querySelector('#quiz button').remove();
+
+    const retakeBtn = document.createElement('button');
+    retakeBtn.textContent = "Retake Quiz";
+    retakeBtn.type = "button";
+    retakeBtn.addEventListener('click', function() {
+        location.reload();
+    });
+
+    const clearBtn = document.createElement('button');
+    clearBtn.textContent = "Clear Scores";
+    clearBtn.type = "button";
+    quiz.append(retakeBtn, clearBtn);
+    clearBtn.addEventListener('click', removeScores);
+};
+
+const removeScores = () => {
+    scores.splice(0, scores.length);
+    localStorage.setItem('scores', scores);
+    document.querySelector('#quiz ol').remove();
     
 }
 
@@ -92,31 +155,31 @@ startBtn.addEventListener("click", function(e) {
 });
 
 quiz.addEventListener("click", function(e) {
-    const feedbackArea = document.querySelector("#quiz p");
-    feedbackArea.style.visibility = "visible";
-    if (e.target.dataset.correct === "true") {
-        score += 1;
-        feedbackArea.textContent = "Correct";
-    } else {
-        timer -= 10;
-        feedbackArea.textContent = "Wrong"
-    }
-
-    setTimeout(() => { 
-        feedbackArea.textContent = "";
-        feedbackArea.style.visibility = "hidden";
-    }, 500);
+    if (e.target.matches('span')) {
+        const feedbackArea = document.querySelector("#quiz p");
+        feedbackArea.style.visibility = "visible";
+        if (e.target.dataset.correct === "true") {
+            currentScore += 1;
+            feedbackArea.textContent = "Correct";
+        } else {
+            timer -= 10;
+            feedbackArea.textContent = "Wrong"
+        }
     
-    if (currentIndex === (questionSet.length - 1)) {
-        endQuiz();
-    } else {
-        currentIndex++;
-        displayNextQuestion();
+        setTimeout(() => { 
+            feedbackArea.textContent = "";
+            feedbackArea.style.visibility = "hidden";
+        }, 1000);
+        
+        if (currentIndex === (questionSet.length - 1)) {
+            endQuiz();
+        } else {
+            currentIndex++;
+            displayNextQuestion();
+        }
     }
 });
 
-
-
-let displayScores = () => console.log("here");
-
-highscoresLink.addEventListener("click", displayScores);
+highscoresLink.addEventListener("click", function() {
+    displayScores(false);
+});
