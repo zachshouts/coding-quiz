@@ -9,7 +9,10 @@ const questionSet = [
     {question: "The first argument in the setInterval() function, is what kind of function?", 
     answer: "callback",
     option1: "anonymous", option2: "callback", option3: "arrow", option4: "standard"},
-    {question: "Is this going to work?", answer: "hopefully", option1: "yes", option2: "no", option3: "hopefully", option4: "no idea"}
+    {question: "Is this going to work?", answer: "hopefully", option1: "yes", option2: "no", option3: "hopefully", option4: "no idea"},
+    {question: "Is this student going to find success in programming?", answer: "absolutely", option1: "absolutely", option2: "maybe", option3: "no", option4: "probably not"},
+    {question: "How many planets are in the solar system?", answer: "8 if you want to be technical", option1: "no idea", option2: "1", option3: "8 if you want to be technical", option4: "9, pluto still counts"},
+    {question: "What is the correct way to peel a banana?", answer: "from the bottom", option1: "from the bottom", option2: "from the top", option3: "i dont eat bananas", option4: "there is no correct way"}
 ];
 
 const scores = JSON.parse(localStorage.getItem("scores") || '[]');
